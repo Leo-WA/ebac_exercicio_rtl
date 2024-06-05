@@ -1,38 +1,43 @@
-import { FormEvent, useState } from 'react';
-import styles from './PostComments.module.css';
+import React, { useState } from 'react';
 
-import Comment from '../../models/Comment';
-
-const Post = () => {
-    const [comments, setComments] = useState<Comment[]>([]);
-    const [tempComment, setTempComment] = useState('');
-
-    function handleAddComment(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        const newComment = new Comment(comments.length, tempComment);
-        setTempComment('');
-        setComments([...comments, newComment]);
-    }
-
-    return (
-        <div>
-            <ul className={styles['post-comments']}>
-                {comments.map(({ comment, id }) => (
-                    <li className={styles['post-comment']} key={id}>
-                        <p className={styles['post-comment-content']}>
-                            {comment}
-                        </p>
-                    </li>
-                ))}
-            </ul>
-            <form onSubmit={handleAddComment} className={styles['post-comments-form']}>
-                <textarea value={tempComment} onChange={e => setTempComment(e.target.value)} required className={styles['post-comments-form-textarea']} />
-                <button type="submit" className={styles['post-comments-form-button']}>
-                    Comentar
-                </button>
-            </form>
-        </div>
-    );
+interface Comment {
+  id: number;
+  text: string;
 }
 
-export default Post;
+const PostComments: React.FC = () => {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentText, setCommentText] = useState('');
+
+  const handleAddComment = () => {
+    const newComment = {
+      id: comments.length + 1,
+      text: commentText,
+    };
+    setComments([...comments, newComment]);
+    setCommentText('');
+  };
+
+  return (
+    <div>
+      <input
+        data-testid="comment-input"
+        type="text"
+        value={commentText}
+        onChange={(e) => setCommentText(e.target.value)}
+      />
+      <button data-testid="add-comment-button" onClick={handleAddComment}>
+        Add Comment
+      </button>
+      <ul>
+        {comments.map((comment) => (
+          <li key={comment.id} data-testid="comment-item">
+            {comment.text}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default PostComments;
